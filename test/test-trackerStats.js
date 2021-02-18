@@ -28,72 +28,72 @@ let coverageMap = new Map();
 let claimAddr;
 let noClaimAddr;
 
-describe("### Setup", function() {
-  before(async () => {
-    this.timeout(40000);
-    deployer = ethers.provider.getSigner(0);
+// describe("### Setup", function() {
+//   before(async () => {
+//     this.timeout(40000);
+//     deployer = ethers.provider.getSigner(0);
+//
+//     const CoverRouter = await ethers.getContractFactory("CoverRouter");
+//     coverRouter = await CoverRouter.deploy(protocolFactory, bFactoryAddr);
+//     await coverRouter.deployed();
+//
+//     factory = await ethers.getContractAt("IProtocolFactory", protocolFactory);
+//     redeemFeeNumerator = await factory.redeemFeeNumerator();
+//     redeemFeeDenominator = await factory.redeemFeeDenominator();
+//
+//     dai = await ethers.getContractAt("IERC20", daiAddr);
+//     yDai = await ethers.getContractAt("IERC20", yDaiAddr);
+//   });
+//
+//   it("should fetch data for 6 coverages (3 DAI based, 3 yDAI based) and set pools-mapping", async function() {
+//     this.timeout(100000);
+//
+//     // create coverage mapping and feed CoverRouter
+//     for (let i=0; i < coverageNames.length; i++) {
+//       cover = await ethers.getContractAt("ICover", coverAddr[i]);
+//       protocol = await ethers.getContractAt("IProtocol", protocolAddr[i]);
+//       timestamp = await cover.expirationTimestamp();
+//       collateral = await cover.collateral();
+//       coverages[i] = {
+//           protocolAddr: protocolAddr[i],
+//           coverAddr: coverAddr[i],
+//           collateralAddr: collateral,
+//           timestamp: timestamp,
+//           pairedToken: pairedTokenAddr[i]
+//         };
+//       await coverageMap.set(coverageNames[i], coverages[i]);
+//
+//       // register pools in CoverRouter
+//       claimAddr = await cover.claimCovToken();
+//       noClaimAddr = await cover.noclaimCovToken();
+//       await coverRouter.setPoolForPair(claimAddr, pairedTokenAddr[i], claimPools[i]);
+//       await coverRouter.setPoolForPair(noClaimAddr, pairedTokenAddr[i], noClaimPools[i]);
+//     }
+//
+//     // // check mapping
+//     // for (var [key, value] of coverageMap.entries()) {
+//     //   console.log(" ### "+key+" ###")
+//     //   console.log(value);
+//     //   console.log("=======================")
+//     // }
+//   });
+// });
 
-    const CoverRouter = await ethers.getContractFactory("CoverRouter");
-    coverRouter = await CoverRouter.deploy(protocolFactory, bFactoryAddr);
-    await coverRouter.deployed();
-
-    factory = await ethers.getContractAt("IProtocolFactory", protocolFactory);
-    redeemFeeNumerator = await factory.redeemFeeNumerator();
-    redeemFeeDenominator = await factory.redeemFeeDenominator();
-
-    dai = await ethers.getContractAt("IERC20", daiAddr);
-    yDai = await ethers.getContractAt("IERC20", yDaiAddr);
-  });
-
-  it("should fetch data for 6 coverages (3 DAI based, 3 yDAI based) and set pools-mapping", async function() {
-    this.timeout(100000);
-
-    // create coverage mapping and feed CoverRouter
-    for (let i=0; i < coverageNames.length; i++) {
-      cover = await ethers.getContractAt("ICover", coverAddr[i]);
-      protocol = await ethers.getContractAt("IProtocol", protocolAddr[i]);
-      timestamp = await cover.expirationTimestamp();
-      collateral = await cover.collateral();
-      coverages[i] = {
-          protocolAddr: protocolAddr[i],
-          coverAddr: coverAddr[i],
-          collateralAddr: collateral,
-          timestamp: timestamp,
-          pairedToken: pairedTokenAddr[i]
-        };
-      await coverageMap.set(coverageNames[i], coverages[i]);
-
-      // register pools in CoverRouter
-      claimAddr = await cover.claimCovToken();
-      noClaimAddr = await cover.noclaimCovToken();
-      await coverRouter.setPoolForPair(claimAddr, pairedTokenAddr[i], claimPools[i]);
-      await coverRouter.setPoolForPair(noClaimAddr, pairedTokenAddr[i], noClaimPools[i]);
-    }
-
-    // // check mapping
-    // for (var [key, value] of coverageMap.entries()) {
-    //   console.log(" ### "+key+" ###")
-    //   console.log(value);
-    //   console.log("=======================")
-    // }
-  });
-});
-
-describe("### GET POOL STATS", function() {
-  it("Get Amount of CLAIM Tokens in BPool", async function() {
-    const [claimPool, noclaimPool, claimTokenAddr, noclaimTokenAddr] = await getCovPools("CURVE");
-    const claimToken = await ethers.getContractAt("IERC20", claimTokenAddr);
-
-    const amountClaimMinted = await claimToken.totalSupply();
-    const amountClaimInPool = await claimPool.getBalance(claimTokenAddr);
-    const amountCollateralInPool = await claimPool.getBalance(coverageMap.get("CURVE").collateralAddr);
-    const amountClaimNotInPool = amountClaimMinted.sub(amountClaimInPool);
-
-    console.log("Amount of CLAIM minted: " + ethers.utils.formatEther(amountClaimMinted).toString());
-    console.log("Amount of CLAIM in BPool: " + ethers.utils.formatEther(amountClaimInPool).toString());
-    console.log("Amount of DAI in BPool: " + ethers.utils.formatEther(amountCollateralInPool).toString())
-    console.log("Amount of CLAIM not in pool: " + ethers.utils.formatEther(amountClaimNotInPool).toString());
-  });
+// describe("### GET POOL STATS", function() {
+//   it("Get Amount of CLAIM Tokens in BPool", async function() {
+//     const [claimPool, noclaimPool, claimTokenAddr, noclaimTokenAddr] = await getCovPools("CURVE");
+//     const claimToken = await ethers.getContractAt("IERC20", claimTokenAddr);
+//
+//     const amountClaimMinted = await claimToken.totalSupply();
+//     const amountClaimInPool = await claimPool.getBalance(claimTokenAddr);
+//     const amountCollateralInPool = await claimPool.getBalance(coverageMap.get("CURVE").collateralAddr);
+//     const amountClaimNotInPool = amountClaimMinted.sub(amountClaimInPool);
+//
+//     console.log("Amount of CLAIM minted: " + ethers.utils.formatEther(amountClaimMinted).toString());
+//     console.log("Amount of CLAIM in BPool: " + ethers.utils.formatEther(amountClaimInPool).toString());
+//     console.log("Amount of DAI in BPool: " + ethers.utils.formatEther(amountCollateralInPool).toString())
+//     console.log("Amount of CLAIM not in pool: " + ethers.utils.formatEther(amountClaimNotInPool).toString());
+//   });
 
   // it("Calculate volume / fees needed to push CLAIM price to 1 DAI", async function() {
   //
@@ -123,46 +123,287 @@ describe("### GET POOL STATS", function() {
   //   console.log("Amount of CLAIM to buy (for 1 DAI = 1 CLAIM): "+amountToBuy.toString());
   //   console.log("Slippage per Unit: "+slippagePerUnit.toString()+" -- Total Slippage [%]: "+totalSlippage.toString());
   // });
-});
+// });
 
-describe("### CALCULATE COVERAGE DEMAND", function() {
-  it("Get Subgraph data", async function() {
+describe("### CALC TOOL", function() {
+  it("CP: Calculate earned Premium", async function() {
 
-    const [claimPool, noclaimPool, claimTokenAddr, noclaimTokenAddr] = await getCovPools("CURVE");
+    // ##################################################################
+    // ONLY FOR CP, selling the minted CLAIM tokens after minting
+    // ##################################################################
 
-    const result = await axios.post(
-      "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer",
-      {
-        query: `
-        {
-          pool (id: "0xdfe5ead7bd050eb74009e7717000eeadcf0f18db") {
-            totalSwapVolume
-            totalSwapFee
-            tokens {
-              symbol
-              address
-            }
-            swaps{
-              tokenOut
-              value
-            }
-          }
-        }
-        `
-      }
-    );
+    // COVER API DATA
+    const swapFee = 0.01; // CLAIM pool
 
-    // console.log(result.data.data.pool);
+    const denormWeightClaim = 40;
+    const denormWeightDai = 10;
 
-    let coverageDemand = 0;
-    for(let i = 0; result.data.data.pool.swaps.length > i; i++){
-        if(result.data.data.pool.swaps[i].tokenOut == claimTokenAddr.toLowerCase()) {
-          coverageDemand += parseFloat(result.data.data.pool.swaps[i].value);
-        }
-    }
-    console.log("Curve coverage demand: "+coverageDemand);
+    const balanceClaim = 2144998;
+    const balanceDai = 91400;
+
+    // INPUT DATA
+    const mintAmount = 10000;
+
+    // PREMIUM CALC
+    const premium = balanceDai * (1 - (balanceClaim / (balanceClaim + mintAmount * (1 - swapFee))) ** (denormWeightClaim / denormWeightDai));
+
+    console.log("Earned Premium: "+premium);
+  });
+
+  it("MM & HACK: Swap Fees and Impermanent Loss", async function() {
+
+    // #################################
+    // CLAIM POOL
+    // #################################
+
+    // COVER API DATA
+    let swapFee = 0.01;
+
+    let denormWeightClaim = 40;
+    let denormWeightDai = 10;
+
+    let balanceClaim = 2144998;
+    let balanceDai = 91400;
+
+    let priceClaimToken = 0.17;
+
+    // INPUT DATA
+    let targetEndPrice = 1;
+    let mintAmount = 10000;
+
+    // CALC SWAP FEEs
+    let normalizedWeightClaim = ((100 / (denormWeightClaim + denormWeightDai)) * denormWeightClaim) / 100;
+    let slippagePerDai = (1 - swapFee)/(2 * balanceDai * normalizedWeightClaim);
+    let daiSpent = ((targetEndPrice / priceClaimToken) - 1) / slippagePerDai;
+
+    let earnedSwapFeesClaim = daiSpent * swapFee;
+
+    // CALC IMPERMANENT LOSS
+    let claimPriceChange = ((targetEndPrice * 100) / priceClaimToken) / 100;
+    let poolValue = (claimPriceChange * normalizedWeightClaim) + (1 - normalizedWeightClaim);
+    let assetValueIfHeld = (claimPriceChange ** normalizedWeightClaim) * (1 ** (1-normalizedWeightClaim));
+
+    let impermanenLossClaim = Math.abs(assetValueIfHeld / poolValue - 1);
+
+    // console.log("MM_CLAIMPOOL_HACK - SwapFees: "+earnedSwapFeesClaim);
+    // console.log("MM_CLAIMPOOL_HACK - Impermanent Loss: "+impermanenLossClaim);
+
+    // #################################
+    // NOCLAIM POOL
+    // #################################
+
+    // COVER API DATA
+    swapFee = 0.01;
+
+    let denormWeightNolaim = 49;
+    denormWeightDai = 1;
+
+    let balanceNoclaim = 2144274;
+    balanceDai = 56709;
+
+    let priceNoclaimToken = 0.92;
+
+    // INPUT DATA
+    targetEndPrice = 0.03;
+
+    // CALC SWAP Fees
+    let normalizedWeightDai = ((100 / (denormWeightNolaim + denormWeightDai)) * denormWeightDai) / 100;
+    let slippagePerNoClaim = (1 - swapFee)/(2 * balanceNoclaim * normalizedWeightDai);
+    let noclaimSpent = (1-(targetEndPrice - priceNoclaimToken) / targetEndPrice) / slippagePerNoClaim;
+
+    earnedSwapFeesNoClaim = noclaimSpent * targetEndPrice * swapFee;
+
+    // CALC IMPERMANENT LOSS
+    let noclaimPriceChange = ((targetEndPrice * 100) / priceNoclaimToken) / 100;
+    poolValue = (noclaimPriceChange * (100 - normalizedWeightDai*100)/100) + normalizedWeightDai;
+    assetValueIfHeld = (noclaimPriceChange ** (1-normalizedWeightDai)) * (1 ** normalizedWeightDai);
+
+    impermanenLossNoClaim = Math.abs(assetValueIfHeld / poolValue - 1);
+
+    //console.log("noclaimSpent: "+noclaimSpent+" - poolValue: "+poolValue+" - assetValueIfHeld: "+assetValueIfHeld)
+
+    // console.log("MM_NOCLAIMPOOL_HACK - SwapFees: "+earnedSwapFeesNoClaim);
+    // console.log("MM_NOCLAIMPOOL_HACK - Impermanent Loss: "+impermanenLossNoClaim);
+
+
+    // TOTAL
+    const totalIL = impermanenLossClaim + impermanenLossNoClaim;
+    const il = totalIL * mintAmount;
+
+    const totalSF = earnedSwapFeesClaim + earnedSwapFeesNoClaim;
+    console.log("MM_HACK total Swap Fees: "+totalSF);
+    console.log("MM_HACK total Impermanent Loss: "+il);
+  });
+
+  it("MM & NO HACK: Swap Fees and Impermanent Loss", async function() {
+
+    // #################################
+    // CLAIM POOL
+    // #################################
+
+    // COVER API DATA
+    let swapFee = 0.01;
+
+    let denormWeightClaim = 40;
+    let denormWeightDai = 10;
+
+    let balanceClaim = 2144998;
+    let balanceDai = 91400;
+
+    let priceClaimToken = 0.17;
+
+    // INPUT DATA
+    let targetEndPrice = 0.03;
+    let mintAmount = 10000;
+
+    // CALC SWAP FEEs
+    let normalizedWeightDai = ((100 / (denormWeightClaim + denormWeightDai)) * denormWeightDai) / 100;
+    let slippagePerClaim = (1 - swapFee)/(2 * balanceClaim * normalizedWeightDai);
+    let claimSpent = (1-(targetEndPrice - priceClaimToken) / targetEndPrice) / slippagePerClaim;
+
+    let earnedSwapFeesClaim = claimSpent * targetEndPrice * swapFee;
+
+    // CALC IMPERMANENT LOSS
+    let claimPriceChange = ((targetEndPrice * 100) / priceClaimToken) / 100;
+    let poolValue = (claimPriceChange * (100 - normalizedWeightDai*100)/100) + normalizedWeightDai;
+    let assetValueIfHeld = (claimPriceChange ** (1-normalizedWeightDai)) * (1 ** normalizedWeightDai);
+
+    let impermanenLossClaim = Math.abs(assetValueIfHeld / poolValue - 1);
+
+    // console.log("MM_CLAIMPOOL_NOHACK - SwapFees: "+earnedSwapFeesClaim);
+    // console.log("MM_CLAIMPOOL_NOHACK - Impermanent Loss: "+impermanenLossClaim);
+
+    // #################################
+    // NOCLAIM POOL
+    // #################################
+
+    // COVER API DATA
+    swapFee = 0.01;
+
+    let denormWeightNolaim = 49;
+    denormWeightDai = 1;
+
+    let balanceNoclaim = 2144998;
+    balanceDai = 91400;
+
+    let priceNoclaimToken = 0.87;
+
+    // INPUT DATA
+    targetEndPrice = 1;
+
+    // CALC SWAP Fees
+    let normalizedWeighNoClaim = ((100 / (denormWeightNolaim + denormWeightDai)) * denormWeightNolaim) / 100;
+    let slippagePerDai = (1 - swapFee)/(2 * balanceDai * normalizedWeighNoClaim);
+    let daiSpent = ((targetEndPrice / priceNoclaimToken) - 1) / slippagePerDai;
+
+    earnedSwapFeesNoClaim = daiSpent * swapFee;
+
+    // CALC IMPERMANENT LOSS
+    let noclaimPriceChange = ((targetEndPrice * 100) / priceNoclaimToken) / 100;
+    poolValue = (noclaimPriceChange * normalizedWeighNoClaim) + (1 - normalizedWeighNoClaim);
+    assetValueIfHeld = (noclaimPriceChange ** normalizedWeighNoClaim) * (1 ** (1-normalizedWeighNoClaim));
+
+    impermanenLossNoClaim = Math.abs(assetValueIfHeld / poolValue - 1);
+
+    // console.log("noclaimPriceChange: "+noclaimPriceChange+" - poolValue: "+poolValue+" - assetValueIfHeld: "+assetValueIfHeld)
+    //
+    // console.log("MM_NOCLAIMPOOL_NOHACK - SwapFees: "+earnedSwapFeesNoClaim);
+    // console.log("MM_NOCLAIMPOOL_NOHACK - Impermanent Loss: "+impermanenLossNoClaim);
+
+
+    // TOTAL
+    const totalIL = impermanenLossClaim + impermanenLossNoClaim;
+    const il = totalIL * mintAmount;
+
+    const totalSF = earnedSwapFeesClaim + earnedSwapFeesNoClaim;
+    console.log("MM_NOHACK total Swap Fees: "+totalSF);
+    console.log("MM_NOHACK total Impermanent Loss: "+il);
+  });
+
+  it("CP & HACK: Swap Fees and Impermanent Loss", async function() {
+
+    // #################################
+    // NOCLAIM POOL
+    // #################################
+
+    // COVER API DATA
+    let swapFee = 0.01;
+
+    let denormWeightNolaim = 49;
+    let denormWeightDai = 1;
+
+    let balanceNoclaim = 2144274;
+    let balanceDai = 56709;
+
+    let priceNoclaimToken = 0.92;
+
+    // INPUT DATA
+    let targetEndPrice = 0.03;
+    let mintAmount = 10000;
+
+    // CALC SWAP Fees
+    let normalizedWeightDai = ((100 / (denormWeightNolaim + denormWeightDai)) * denormWeightDai) / 100;
+    let slippagePerNoClaim = (1 - swapFee)/(2 * balanceNoclaim * normalizedWeightDai);
+    let noclaimSpent = (1-(targetEndPrice - priceNoclaimToken) / targetEndPrice) / slippagePerNoClaim;
+
+    let earnedSwapFees = noclaimSpent * targetEndPrice * swapFee;
+
+    // CALC IMPERMANENT LOSS
+    let noclaimPriceChange = ((targetEndPrice * 100) / priceNoclaimToken) / 100;
+    let poolValue = (noclaimPriceChange * (100 - normalizedWeightDai*100)/100) + normalizedWeightDai;
+    let assetValueIfHeld = (noclaimPriceChange ** (1-normalizedWeightDai)) * (1 ** normalizedWeightDai);
+
+    let impermanenLoss = Math.abs(assetValueIfHeld / poolValue - 1);
+    let il = impermanenLoss * mintAmount;
+
+    console.log("CP_HACK total Swap Fees: "+earnedSwapFees);
+    console.log("CP_HACK total Impermanent Loss: "+il);
+  });
+
+  it("CP & NO HACK: Swap Fees and Impermanent Loss", async function() {
+
+    // #################################
+    // NOCLAIM POOL
+    // #################################
+
+    // COVER API DATA
+    let swapFee = 0.01;
+
+    let denormWeightNolaim = 49;
+    let denormWeightDai = 1;
+
+    let balanceNoclaim = 2144998;
+    let balanceDai = 91400;
+
+    let priceNoclaimToken = 0.87;
+
+    // INPUT DATA
+    let targetEndPrice = 1;
+    let mintAmount = 10000;
+
+    // CALC SWAP Fees
+    let normalizedWeighNoClaim = ((100 / (denormWeightNolaim + denormWeightDai)) * denormWeightNolaim) / 100;
+    let slippagePerDai = (1 - swapFee)/(2 * balanceDai * normalizedWeighNoClaim);
+    let daiSpent = ((targetEndPrice / priceNoclaimToken) - 1) / slippagePerDai;
+
+    let earnedSwapFees = daiSpent * swapFee;
+
+    // CALC IMPERMANENT LOSS
+    let noclaimPriceChange = ((targetEndPrice * 100) / priceNoclaimToken) / 100;
+    let poolValue = (noclaimPriceChange * normalizedWeighNoClaim) + (1 - normalizedWeighNoClaim);
+    let assetValueIfHeld = (noclaimPriceChange ** normalizedWeighNoClaim) * (1 ** (1-normalizedWeighNoClaim));
+
+    let impermanenLoss = Math.abs(assetValueIfHeld / poolValue - 1);
+    let il = impermanenLoss * mintAmount;
+
+    console.log("CP_NOHACK - SwapFees: "+earnedSwapFees);
+    console.log("CP_NOHACK - Impermanent Loss: "+il);
   });
 });
+
+
+
+
 
 async function getCovPools(coverage){
   let cover = await ethers.getContractAt("ICover", coverageMap.get(coverage).coverAddr);
